@@ -1,0 +1,37 @@
+service:
+  name: etherless-server
+# app and org for use with dashboard.serverless.com
+app: etherless-server
+org: gianmarcopettinato
+
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+
+# Add the serverless-webpack plugin
+plugins:
+  - serverless-webpack
+  - serverless-offline
+provider:
+  name: aws
+  runtime: nodejs12.x
+  apiGateway:
+    minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+
+functions:
+  createFunction:
+    handler: handler.createFunction
+    events:
+      - http:
+          method: post
+          path: createFunction
+  retriveFunction:
+    handler: handler.retriveFunction
+    events:
+      - http:
+          method: post
+          path: retriveFunction
+  
