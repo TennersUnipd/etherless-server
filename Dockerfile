@@ -18,4 +18,4 @@ RUN npm install && \
 # Bundle app source
 COPY . .
 
-CMD [ "ts-node", "src/index.ts" ]
+CMD [ "ts-node", "src/index.ts"]
