@@ -8,9 +8,9 @@ export enum EnvType {
 export function getConfiguration(forEnv: EnvType): GatewayConfiguration {
     switch (forEnv) {
         case EnvType.Local: return {
-            providerURI: process.env.WEBSOCKET_PROVIDER ? process.env.WEBSOCKET_PROVIDER : "ws://taverna.pettinato.eu:7545",
+            providerURI: process.env.WEBSOCKET_PROVIDER ? process.env.WEBSOCKET_PROVIDER : "ws://taverna.pettinato.eu:8545",
             abiFile: "./contracts/EtherlessSmart.json",
-            contractAddress: process.env.CONTRACT_ADDRESS ? process.env.CONTRACT_ADDRESS : "0xFa34Ae983f823C5e95c9A2E0ec164F1813F187d7"
+            contractAddress: process.env.CONTRACT_ADDRESS ? process.env.CONTRACT_ADDRESS : "0x0bFC1dCDcFc3F2d6aCed8fcf04A926ce1A5866aa"
         }
         case EnvType.Test: return {
             providerURI: process.env.WEBSOCKET_PROVIDER ? process.env.WEBSOCKET_PROVIDER : "",
