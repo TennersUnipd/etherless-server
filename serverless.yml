@@ -29,10 +29,3 @@ functions:
       - http:
           method: post
           path: createFunction
-  retriveFunction:
-    handler: handler.retriveFunction
-    events:
-      - http:
-          method: post
-          path: retriveFunction
-  

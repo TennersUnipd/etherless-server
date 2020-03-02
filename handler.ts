@@ -1,7 +1,6 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 
 const AWS = require('aws-sdk');
-
 const lambda = new AWS.Lambda({ region: 'us-east-1' });
 
 const runtime: string = 'nodejs12.x';
@@ -31,11 +30,12 @@ export const createFunction:APIGatewayProxyHandler = async (event) => {
       else resolve(rData);
     });
   });
-  const response = await prom;
-  if (response) {
-    return { statusCode: 200, body: 'OK' };
-  }
-  return { statusCode: 500, body: 'wrong request' };
+
+  let ARN = ""
+  await prom.then((result)=>{
+    ARN = (JSON.stringify(result));
+    });
+  return { statusCode: 200, body: ARN};
 };
 
 export default 'createFunction';
