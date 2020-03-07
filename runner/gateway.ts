@@ -1,9 +1,8 @@
 const Web3 = require('web3');
-const fs = require('fs');
 
 export interface GatewayConfiguration {
     providerURI: string;
-    abiFile: string;
+    abiFile: JSON;
     contractAddress: string;
     serverlessEndpoint: string;
     testAccount: string;
@@ -15,35 +14,36 @@ export class Gateway {
 
     abi: any;
 
-    contractAddress: string;
+    contractAddress: string = '';
 
     contract: any;
 
     gasLimit: number = 3000000;
 
-    serverlessEndpoint: string;
+    serverlessEndpoint: string = '';
 
-    testAccount: string;
+    testAccount: string = '';
 
-    constructor(config: GatewayConfiguration) {
+    static async build(config: GatewayConfiguration, remoteAbi?:Promise<JSON>):Promise<Gateway> {
+      const toBeReturned = new Gateway();
       // connect to eth network
-      this.web3 = new Web3(new Web3.providers.WebsocketProvider(config.providerURI));
+      toBeReturned.web3 = new Web3(new Web3.providers.WebsocketProvider(config.providerURI));
       // contract descriptor
-      this.abi = this.getABI(config.abiFile);
-      this.contractAddress = config.contractAddress;
-      this.serverlessEndpoint = config.serverlessEndpoint;
-      this.contract = new this.web3.eth.Contract(this.abi, this.contractAddress);
-      this.testAccount = config.testAccount;
+      if (remoteAbi === null) {
+        toBeReturned.abi = config.abiFile;
+      } else {
+        toBeReturned.abi = await remoteAbi;
+      }
+      toBeReturned.contractAddress = config.contractAddress;
+      toBeReturned.serverlessEndpoint = config.serverlessEndpoint;
+      toBeReturned.contract = new toBeReturned
+        .web3.eth.Contract(toBeReturned.abi, toBeReturned.contractAddress);
+      toBeReturned.testAccount = config.testAccount;
+      return toBeReturned;
     }
 
     public setProvider(provider: any) {
       this.web3 = new Web3(provider.WebsocketProvider);
-    }
-
-    private getABI(abiPath: string): any {
-      const parsed = JSON.parse(fs.readFileSync(abiPath));
-      return parsed.abi;
-      this.web3.d;
     }
 
     public disconnect() {

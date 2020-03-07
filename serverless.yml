@@ -29,3 +29,12 @@ functions:
       - http:
           method: post
           path: createFunction
+  runner:
+    handler: handler.startRunner
+    events:
+      - schedule:
+          rate: rate(20 minutes)
+          enabled: true
+      - http:
+          method: get
+          path: startRunner
