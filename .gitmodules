@@ -1,3 +1,2 @@
-[submodule "sharedConfig"]
-	path = sharedConfig
-	url = git@github.com:TennersUnipd/applicationConfigs.git
+[submodule "contracts"]
+	url = https://github.com/TennersUnipd/applicationConfigs.git
