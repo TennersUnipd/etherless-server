@@ -16,10 +16,10 @@ export function getConfiguration(forEnv: EnvType): GatewayConfiguration {
   switch (forEnv) {
     case EnvType.Local: return {
       serverlessEndpoint: 'https://sbx2aeqyl9.execute-api.us-east-1.amazonaws.com/dev/',
-      providerURI: 'ws://localhost:8545',
-      abiFile: JSON.parse(fs.readFileSync('./contracts/EtherlessSmart.json')),
-      contractAddress: '0x94DFF8Fce5D7e703Dc50FC03a990f3F4438017Fe',
-      testAccount: '0x491E061Dd3097De2FD7428f553228D13fA38308F',
+      providerURI: 'wss://ropsten.infura.io/ws/v3/f065353f3ff14efa80c5be0cf4cc6655',
+      abiFile: './contracts/EtherlessSmart.json',
+      contractAddress: '0xbC8aa05E7B58f6fb53D197ee0028f987a4181Ab9',
+      testAccount: '0x6Fad230E4549086a4ae0d9f740F7192962fbbc3d',
     };
     case EnvType.Test: return {
       serverlessEndpoint: 'https://sbx2aeqyl9.execute-api.us-east-1.amazonaws.com/dev/',
