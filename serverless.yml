@@ -1,8 +1,8 @@
 service:
   name: etherless-server
 # app and org for use with dashboard.serverless.com
-app: etherless-server
-org: gianmarcopettinato
+app: myapp
+org: ciuleigabriel
 
 custom:
   webpack:
@@ -29,12 +29,9 @@ functions:
       - http:
           method: post
           path: createFunction
-  runner:
-    handler: handler.startRunner
+  aliveRunner:
+    handler: handler.aliveRunner
     events:
-      - schedule:
-          rate: rate(20 minutes)
-          enabled: true
       - http:
           method: get
-          path: startRunner
+          path: aliveRunner
