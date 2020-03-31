@@ -5,8 +5,8 @@
   "main": "handler.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "ts-node deployer.ts",
-    "start": "ts-node local.ts"
+    "start": "node lib/local.js",
+    "build": "tsc"
   },
   "dependencies": {
     "@types/axios": "^0.14.0",
