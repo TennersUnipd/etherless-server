@@ -1,268 +1,40 @@
 /* eslint-disable no-underscore-dangle */
-import { AbiItem } from 'web3-utils';
-import Web3 from 'web3';
+var Web3 = require('web3');
 import { Contract } from 'web3-eth-contract';
-
-const Web3 = require('web3');
-
-require('dotenv').config();
-
-const abi : AbiItem[] = [
-  {
-    inputs: [
-
-    ],
-    payable: false,
-    stateMutability: 'nonpayable',
-    type: 'constructor',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: 'string',
-        name: '_name',
-        type: 'string',
-      },
-      {
-        indexed: false,
-        internalType: 'string',
-        name: '_parameters',
-        type: 'string',
-      },
-      {
-        indexed: false,
-        internalType: 'string',
-        name: '_identifier',
-        type: 'string',
-      },
-    ],
-    name: 'RemoteExec',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: 'string',
-        name: '_response',
-        type: 'string',
-      },
-      {
-        indexed: false,
-        internalType: 'string',
-        name: '_identifier',
-        type: 'string',
-      },
-    ],
-    name: 'RemoteResponse',
-    type: 'event',
-  },
-  {
-    constant: false,
-    inputs: [
-      {
-        internalType: 'string',
-        name: 'fnName',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'description',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'prototype',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'remoteResource',
-        type: 'string',
-      },
-      {
-        internalType: 'uint256',
-        name: 'cost',
-        type: 'uint256',
-      },
-    ],
-    name: 'createFunction',
-    outputs: [
-
-    ],
-    payable: false,
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    constant: true,
-    inputs: [
-      {
-        internalType: 'string',
-        name: 'fnToSearch',
-        type: 'string',
-      },
-    ],
-    name: 'findFunctions',
-    outputs: [
-      {
-        components: [
-          {
-            internalType: 'string',
-            name: 'name',
-            type: 'string',
-          },
-          {
-            internalType: 'string',
-            name: 'description',
-            type: 'string',
-          },
-          {
-            internalType: 'string',
-            name: 'prototype',
-            type: 'string',
-          },
-          {
-            internalType: 'uint256',
-            name: 'cost',
-            type: 'uint256',
-          },
-          {
-            internalType: 'address payable',
-            name: 'owner',
-            type: 'address',
-          },
-          {
-            internalType: 'string',
-            name: 'remoteResource',
-            type: 'string',
-          },
-        ],
-        internalType: 'struct Utils.Function',
-        name: '',
-        type: 'tuple',
-      },
-    ],
-    payable: false,
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    constant: true,
-    inputs: [
-
-    ],
-    name: 'listFunctions',
-    outputs: [
-      {
-        internalType: 'string[]',
-        name: 'functionNames',
-        type: 'string[]',
-      },
-    ],
-    payable: false,
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    constant: false,
-    inputs: [
-      {
-        internalType: 'string',
-        name: 'fnName',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'paramers',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'identifier',
-        type: 'string',
-      },
-    ],
-    name: 'runFunction',
-    outputs: [
-
-    ],
-    payable: true,
-    stateMutability: 'payable',
-    type: 'function',
-  },
-  {
-    constant: false,
-    inputs: [
-      {
-        internalType: 'string',
-        name: 'result',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'identifier',
-        type: 'string',
-      },
-    ],
-    name: 'sendResponse',
-    outputs: [
-
-    ],
-    payable: false,
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-];
-const contractAddress = '0xbC8aa05E7B58f6fb53D197ee0028f987a4181Ab9';
+import axios, { AxiosResponse } from 'axios';
 
 // Listens for eth events, calls lambda functions, returns output to etherless-cli
 
 // configure AWS Lambda service (uses credentials from ~/.aws/credentials)
 const AWS = require('aws-sdk');
-// AWS.config.loadFromPath('./aws-credentials.json')
 const lambda = new AWS.Lambda({ region: 'us-east-1' });
 
-// rewrew
-// rew
-// wer
-// rew
-// rew
-
-// erew
-// e
-// rwerw
-
 class Runner {
-  web3?: Web3;
 
-  contract?: Contract;
+  private web3: any;
 
+  private contract?: Contract;
 
-  config() {
-    // TODO: get abi from ethersca
-    const abi = await getAbi();
-    this.web3 = new Web3('wss://ropsten.infura.io/ws/v3/f065353f3ff14efa80c5be0cf4cc6655');
+  public async config() {
+    const abi = await Runner.getAbi(process.env.CONTRACT_ADDRESS);
+    this.web3 = new Web3(new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws/v3/f065353f3ff14efa80c5be0cf4cc6655'));
     //
-    this.contract = new Web3.eth.Contract(abi, contractAddress);
+    this.contract = new this.web3.eth.Contract(abi, process.env.CONTRACT_ADDRESS);
     // una volta che ho instanziato il contratto
     this.start();
   }
 
-  public static async getAbi(contractAddress: string, destinationPath: string): Promise<any> {
+  private static async getAbi(contractAddress: string): Promise<any> {
     try {
       console.log('DOWNLOADING contract abi');
-      const response: AxiosResponse<EtherscanResponse> = await axios.get(`https://api-ropsten.etherscan.io/api?module=contract&action=getabi&address=${contractAddress}&apikey=${process.env.ETHSCAN}`);
-      return response.data.result;
+      const response: AxiosResponse<EtherscanResponse> = await axios.get(`https://api-ropsten.etherscan.io/api?module=contract&action=getabi&address=${contractAddress}&apikey=${process.env.ETHSCANKEY}`);
+      return JSON.parse(response.data.result);
     } catch (error) {
       throw new Error('Unable to update contract ABI');
     }
   }
 
-  start() {
+  private start() {
     console.log('Starting to listen');
     this.contract.events.RemoteExec((error, event) => {
       console.log('Event received');
@@ -277,13 +49,13 @@ class Runner {
           console.log('Now giving back to etherless-cli');
           const jsonResponse = JSON.stringify(response);
           const sendFn = this.contract.methods.sendResponse(jsonResponse, identifier);
-          transactContractMethod(sendFn).then(() => console.log('Response sent')).catch((er) => console.log('Can\'t send responseo', er));
+          this.transactContractMethod(sendFn).then(() => console.log('Response sent')).catch((er) => console.log('Can\'t send response', er));
         }).catch(console.error);
       }
     });
   }
 
-  static executeLambdaFunction(arn, params) {
+  private static executeLambdaFunction(arn, params) {
     const functionDescriptor = {
       FunctionName: arn,
       Payload: params,
@@ -291,9 +63,13 @@ class Runner {
     return lambda.invoke(functionDescriptor).promise();
   }
 
-  async transactContractMethod(func: any, value: number | undefined = undefined): Promise<any> {
+  private static runnerEthAccount() : EthAddress {
+      return { address: process.env.RUNNER_ACC_ADDRESS, privateKey: process.env.RUNNER_ACC_KEY };
+  }
+
+  private async transactContractMethod(func: any, value: number | undefined = undefined): Promise<any> {
     // SERVER ETH ACCOUNT STORED SOMEWHERE ELSE
-    const caller = { address: '0x6Fad230E4549086a4ae0d9f740F7192962fbbc3d', privateKey: '0x3EB0D669840DF6DEDF5E688B1DB6D30D381F97F60650619DCC723091CBD7DF99' };
+    const caller = Runner.runnerEthAccount();
     let estimatedGas = await func.estimateGas({ from: caller.address, value });
     estimatedGas = Math.round(estimatedGas * 2);
     console.log('Estimated gas', estimatedGas);
@@ -321,6 +97,17 @@ class Runner {
       }).catch(reject);
     });
   }
+}
+
+interface EtherscanResponse {
+  status: string;
+  message: string;
+  result: string;
+}
+
+interface EthAddress {
+  address: string;
+  privateKey: string;
 }
 
 export default Runner;
