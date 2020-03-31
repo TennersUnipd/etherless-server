@@ -1,11 +1,12 @@
 {
   "name": "etherless-server",
-  "version": "1.0.0",
+  "version": "1.0.10",
   "description": "Serverless webpack example using Typescript",
   "main": "handler.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "ts-node deployer.ts"
+    "start": "node lib/local.js",
+    "build": "tsc"
   },
   "dependencies": {
     "@types/axios": "^0.14.0",
@@ -20,6 +21,8 @@
     "dotenv-flow": "^3.1.0",
     "eslint-config-airbnb-typescript": "^7.0.0",
     "from": "^0.1.7",
+    "typescript": "^3.2.4",
+    "ts-loader": "^5.3.3",
     "node-fetch": "^2.6.0",
     "source-map-support": "^0.5.10",
     "web3": "^1.2.4",

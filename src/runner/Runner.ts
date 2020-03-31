@@ -36,7 +36,7 @@ class Runner {
 
   private start() {
     console.log('Starting to listen');
-    this.contract.events.RemoteExec((error, event) => {
+    let subscription = this.contract.events.RemoteExec((error, event) => {
       console.log('Event received');
       if (error == null) {
         const functionRemoteResource = event.returnValues._name;
@@ -52,6 +52,12 @@ class Runner {
           this.transactContractMethod(sendFn).then(() => console.log('Response sent')).catch((er) => console.log('Can\'t send response', er));
         }).catch(console.error);
       }
+    });
+    subscription.on('connected', (connected) => {
+      console.log("connected", connected);
+    });
+    subscription.on('error', (error) => {
+      console.log("ERROR", error);
     });
   }
 

@@ -29,9 +29,3 @@ functions:
       - http:
           method: post
           path: createFunction
-  aliveRunner:
-    handler: handler.aliveRunner
-    events:
-      - http:
-          method: get
-          path: aliveRunner
