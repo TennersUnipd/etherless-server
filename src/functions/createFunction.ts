@@ -1,14 +1,7 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
+import AWSInstance from '../awsInstance';
 
-// TODO: move aws intance to a new file/class
-const AWS = require('aws-sdk');
-
-const lambda = new AWS.Lambda({ region: 'us-east-1' });
-
-
-const runtime: string = 'nodejs12.x';
-const ARN_ROLE: string = 'arn:aws:iam::964189167587:role/etherless-dev';
-const FN_TIMEOUT = 30;
+const AWS = new AWSInstance();
 
 const createFunction: APIGatewayProxyHandler = async (event) => {
   const data = JSON.parse(event.body);
@@ -21,14 +14,14 @@ const createFunction: APIGatewayProxyHandler = async (event) => {
     Handler: `${data.name}.handler`,
     MemorySize: 128,
     Publish: true,
-    Role: ARN_ROLE,
-    Runtime: runtime,
-    Timeout: FN_TIMEOUT,
+    Role: AWS.getArnRole(),
+    Runtime: AWS.getRuntime(),
+    Timeout: AWS.getFnTimeout(),
     VpcConfig: {
     },
   };
   const prom = new Promise((resolve, reject) => {
-    lambda.createFunction(functionToStore, (err: any, rData: any) => {
+    AWS.getLambda().createFunction(functionToStore, (err: any, rData: any) => {
       if (err) reject(err);
       else resolve(rData);
     });
