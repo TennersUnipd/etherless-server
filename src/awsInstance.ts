@@ -8,9 +8,9 @@ class AWSInstance{
 
     constructor(){
         this.lambda = new AWS.Lambda({ region: 'us-east-1' });
-        this.runtime = 'nodejs12.x';
+        this.runtime = 'nodejs10.x';
         this.ARN_ROLE = 'arn:aws:iam::964189167587:role/etherless-dev';
-        this.FN_TIMEOUT = 30;
+        this.FN_TIMEOUT = 60;
     }
 
     getLambda ():any{

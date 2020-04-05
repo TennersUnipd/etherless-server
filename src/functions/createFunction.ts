@@ -3,7 +3,7 @@ import AWSInstance from '../awsInstance';
 
 const AWS = new AWSInstance();
 
-const createFunction: APIGatewayProxyHandler = async (event) => {
+export const createFunction:APIGatewayProxyHandler = async (event) => {
   const data = JSON.parse(event.body);
   const buffer = Buffer.from(data.zip, 'utf8');
   const functionToStore = {

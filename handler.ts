@@ -1,3 +1,1 @@
-const createFunction = require('./src/functions/createFunction');
-
-export { createFunction };
+export const createFunction = require('./src/functions/createFunction').default;
