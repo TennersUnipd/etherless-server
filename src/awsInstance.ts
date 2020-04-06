@@ -1,6 +1,6 @@
 const AWS = require('aws-sdk');
 
-class AWSInstance{
+export class AWSInstance{
     private lambda;
     private runtime:string;
     private ARN_ROLE: string;
