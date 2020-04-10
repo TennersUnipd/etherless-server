@@ -1,31 +1,47 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import AWSInstance from '../awsInstance';
 
-const AWS = new AWSInstance();
+
+export class FunctionDeployer{
+  private aws:AWSInstance;
+
+  constructor(aws:AWSInstance){
+    this.aws = aws;
+  }
+
+  public prepareFunctionToStore(parsedData:any):any {
+   return {
+      Code: {
+        ZipFile: Buffer.from(parsedData.zip, 'utf8'),
+      },
+      FunctionName: parsedData.name,
+      Handler: `${parsedData.name}.handler`,
+      MemorySize: 128,
+      Publish: true,
+      Role: this.aws.getArnRole(),
+      Runtime: this.aws.getRuntime(),
+      Timeout: this.aws.getFnTimeout(),
+      VpcConfig: {
+      },
+    }
+  }
+
+  public uploadFunction(functionDefinition):Promise<any>{
+    return new Promise((resolve,reject)=>{
+      this.aws.getLambda().createFunction(functionDefinition, (err:any,rData) =>{
+        if(err) reject(err);
+        else resolve(rData);
+      })
+    });
+  }
+}
 
 export const createFunction:APIGatewayProxyHandler = async (event) => {
+  const deployer:FunctionDeployer = new FunctionDeployer(new AWSInstance());
   const data = JSON.parse(event.body);
-  const buffer = Buffer.from(data.zip, 'utf8');
-  const functionToStore = {
-    Code: {
-      ZipFile: buffer,
-    },
-    FunctionName: data.name,
-    Handler: `${data.name}.handler`,
-    MemorySize: 128,
-    Publish: true,
-    Role: AWS.getArnRole(),
-    Runtime: AWS.getRuntime(),
-    Timeout: AWS.getFnTimeout(),
-    VpcConfig: {
-    },
-  };
-  const prom = new Promise((resolve, reject) => {
-    AWS.getLambda().createFunction(functionToStore, (err: any, rData: any) => {
-      if (err) reject(err);
-      else resolve(rData);
-    });
-  });
+  let functionSerialized = deployer.prepareFunctionToStore(data);
+  
+  const prom = deployer.uploadFunction(functionSerialized);
 
   let ARN = '';
   await prom.then((result) => {
