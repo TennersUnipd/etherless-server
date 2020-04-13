@@ -9,4 +9,9 @@ jspm_packages
 .webpack
 
 aws-tpm.json
+
 .env
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

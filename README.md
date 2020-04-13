@@ -24,3 +24,4 @@ In the offline mode you can’t use the creation function because it can’t com
 If you want to deploy to aws lambda, you need to sign up serverless server and associated the aws account, for more information reference the serverless documentation.
 For the deployed version, you must change the ANR_ROLE in the handler with another one made from the IAM panel in the AWS control panel.
 To deploy the server to the aws lambda service ```sls deploy```. In aws environment, the runner should run under cronjob in auto-run.
+
