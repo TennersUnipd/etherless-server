@@ -28,6 +28,35 @@ export class AWSInstance{
     getFnTimeout ():number{
         return this.FN_TIMEOUT;
     }
+    public prepareFunctionToUpdate(parsedData:any):any {
+        return {
+           FunctionName: parsedData.ARN,
+           ZipFile: Buffer.from(parsedData.zip, 'utf8'),
+           Publish: true,
+        }
+    }
+    public prepareFunctionToDelete(parsedData:any):any {
+        return {
+           FunctionName: parsedData.ARN,
+        }
+    }
+    public prepareFunctionToStore(parsedData:any):any {
+        return {
+           Code: {
+             ZipFile: Buffer.from(parsedData.zip, 'utf8'),
+           },
+           FunctionName: parsedData.name,
+           Handler: `${parsedData.name}.handler`,
+           MemorySize: 128,
+           Publish: true,
+           Role: this.getArnRole(),
+           Runtime: this.getRuntime(),
+           Timeout: this.getFnTimeout(),
+           VpcConfig: {
+           },
+         }
+       }
+     
 }
 
 export default AWSInstance ;
