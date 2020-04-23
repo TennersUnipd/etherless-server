@@ -33,6 +33,7 @@ export const updateFunction:APIGatewayProxyHandler = async (event) => {
   const data = JSON.parse(event.body);
   let functionSerialized = this.aws.prepareFunctionToUpdate(data);
   const prom = deployer.letUpdateFunction(functionSerialized);
+    //manca messaggio di esito positivo
   let ARN = '';
   await prom.then((result) => {
     ARN = (JSON.stringify(result));
@@ -40,4 +41,4 @@ export const updateFunction:APIGatewayProxyHandler = async (event) => {
   return { statusCode: 200, body: ARN };
 };
 
-export default createFunction;
+export default updateFunction;
