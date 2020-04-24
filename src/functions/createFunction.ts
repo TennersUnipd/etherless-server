@@ -9,23 +9,6 @@ export class FunctionDeployer{
     this.aws = aws;
   }
 
-  public prepareFunctionToStore(parsedData:any):any {
-   return {
-      Code: {
-        ZipFile: Buffer.from(parsedData.zip, 'utf8'),
-      },
-      FunctionName: parsedData.name,
-      Handler: `${parsedData.name}.handler`,
-      MemorySize: 128,
-      Publish: true,
-      Role: this.aws.getArnRole(),
-      Runtime: this.aws.getRuntime(),
-      Timeout: this.aws.getFnTimeout(),
-      VpcConfig: {
-      },
-    }
-  }
-
   public uploadFunction(functionDefinition):Promise<any>{
     return new Promise((resolve,reject)=>{
       this.aws.getLambda().createFunction(functionDefinition, (err:any,rData) =>{
@@ -39,7 +22,7 @@ export class FunctionDeployer{
 export const createFunction:APIGatewayProxyHandler = async (event) => {
   const deployer:FunctionDeployer = new FunctionDeployer(new AWSInstance());
   const data = JSON.parse(event.body);
-  let functionSerialized = deployer.prepareFunctionToStore(data);
+  let functionSerialized = this.aws.prepareFunctionToStore(data);
   
   const prom = deployer.uploadFunction(functionSerialized);
 
