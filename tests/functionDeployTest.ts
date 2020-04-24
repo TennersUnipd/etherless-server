@@ -1,7 +1,7 @@
 import {FunctionDeployer} from  '../src/functions/createFunction'
 import {describe, it} from 'mocha'
 import mockito from 'ts-mockito'
-import {assert,expect} from 'chai'
+import {assert} from 'chai'
 import {AWSInstance} from '../src/awsInstance'
 
 import * as AWSMock from "aws-sdk-mock";
@@ -26,17 +26,22 @@ describe('testing FunctionDeployer', () => {
     mockito.when(mockedAWS.getArnRole()).thenReturn('roleString');
     mockito.when(mockedAWS.getRuntime()).thenReturn('runTimeString');
     mockito.when(mockedAWS.getFnTimeout()).thenReturn(10);
-    mockito.when(mockedAWS.getLambda()).thenReturn(new AWS.Lambda({ region: 'us-east-1' }));
+    mockito.when(mockedAWS.getLambda()).thenReturn(new AWS.Lambda({ region: 'us-east-1' })); 
     const data = {name:'testName',zip:zipBuffer};
+    mockito.when(mockedAWS.prepareFunctionToStore(data)).thenReturn(
+      {
 
-    it('testing prepareFunctionToStore()',()=>{
+      }
+    )
+
+    /*it('testing prepareFunctionToStore()',()=>{
         const result = fnDeployer.prepareFunctionToStore(data);
         expect(result).to.include({FunctionName:'testName'});
         expect(result).to.include({Handler:'testName.handler'});
         expect(result).to.include({Role:'roleString'});
         expect(result).to.include({Runtime:'runTimeString'});
         expect(result).to.include({Timeout:10});
-    });
+    });*/
     it('testing uploadFunction()',()=>{
         AWSMock.mock('Lambda','createFunction',(params: GetItemInput, callBack: Function)=>{
             console.log(params);
@@ -44,7 +49,7 @@ describe('testing FunctionDeployer', () => {
             callBack(null,{arnFunction:'test'});
         });
         console.log(data);
-        const toLoad = fnDeployer.prepareFunctionToStore(data);
+        const toLoad = mockedAWS.prepareFunctionToStore(data);
         console.log(toLoad);
         fnDeployer.uploadFunction(toLoad)
           .then((result)=>{console.log(result)})
