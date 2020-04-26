@@ -2,34 +2,35 @@ import { APIGatewayProxyHandler } from 'aws-lambda';
 import AWSInstance from '../awsInstance';
 
 
-export class FunctionDeployer{
-  private aws:AWSInstance;
+export class FunctionDeployer {
+  private aws: AWSInstance;
 
-  constructor(aws:AWSInstance){
+  constructor(aws: AWSInstance) {
     this.aws = aws;
   }
 
-  public prepareFunctionToUpdate(parsedData:any):any {
-   return {
+  public prepareFunctionToUpdate(parsedData: any): any {
+    return {
       FunctionName: parsedData.ARN,
       ZipFile: Buffer.from(parsedData.zip, 'utf8'),
       Publish: true,
     }
   }
 
-  public letUpdateFunction(functionDefinition):Promise<any>{
-    return new Promise((resolve,reject)=>{
+  public letUpdateFunction(data): Promise<any> {
+    let functionSerialized = this.aws.prepareFunctionToUpdate(data);
+    return new Promise((resolve, reject) => {
 
-      this.aws.getLambda().updateFunctionCode(functionDefinition, (err:any,rData) =>{
-        if(err) reject(err);
+      this.aws.getLambda().updateFunctionCode(functionSerialized, (err: any, rData) => {
+        if (err) reject(err);
         else resolve(rData);
       })
     });
   }
 }
 
-export const updateFunction:APIGatewayProxyHandler = async (event) => {
-  const deployer:FunctionDeployer = new FunctionDeployer(new AWSInstance());
+export const updateFunction: APIGatewayProxyHandler = async (event) => {
+  const deployer: FunctionDeployer = new FunctionDeployer(new AWSInstance());
   const data = JSON.parse(event.body);
   let functionSerialized = this.aws.prepareFunctionToUpdate(data);
   const prom = deployer.letUpdateFunction(functionSerialized);
