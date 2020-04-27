@@ -41,4 +41,4 @@ export const updateFunction: APIGatewayProxyHandler = async (event) => {
   return { statusCode: 200, body: ARN };
 };
 
-export default createFunction;
+export default updateFunction;
