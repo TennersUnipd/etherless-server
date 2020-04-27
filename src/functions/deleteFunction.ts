@@ -10,7 +10,6 @@ export class FunctionDeployer {
   }
   public letFunctionDelete(data): Promise<any> {
     let functionSerialized = this.aws.prepareFunctionToDelete(data);
-    console.log('FUNCTION SERIALED= ', functionSerialized);
     return new Promise((resolve, reject) => {
       this.aws.getLambda().deleteFunction(functionSerialized, (err: any, rData) => {
         if (err) reject(err);
@@ -26,7 +25,7 @@ export const deleteFunction: APIGatewayProxyHandler = async (event) => {
   const data = JSON.parse(event.body);
   console.log('DATA= ', data);
   const prom = await deployer.letFunctionDelete(data);
-  return { statusCode: 200, body: prom };
+  return { statusCode: 200, body: 'ok' };
 };
 
 export default deleteFunction;
