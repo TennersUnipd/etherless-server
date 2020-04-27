@@ -35,3 +35,9 @@ functions:
       - http:
           method: post
           path: deleteFunction
+  updateFunction:
+    handler: handler.updateFunction
+    events:
+      - http:
+          method: post
+          path: updateFunction

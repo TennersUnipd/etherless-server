@@ -32,8 +32,7 @@ export class FunctionDeployer {
 export const updateFunction: APIGatewayProxyHandler = async (event) => {
   const deployer: FunctionDeployer = new FunctionDeployer(new AWSInstance());
   const data = JSON.parse(event.body);
-  let functionSerialized = this.aws.prepareFunctionToUpdate(data);
-  const prom = deployer.letUpdateFunction(functionSerialized);
+  const prom = deployer.letUpdateFunction(data);
   let ARN = '';
   await prom.then((result) => {
     ARN = (JSON.stringify(result));

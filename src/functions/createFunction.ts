@@ -9,9 +9,10 @@ export class FunctionDeployer{
     this.aws = aws;
   }
 
-  public uploadFunction(functionDefinition):Promise<any>{
+  public uploadFunction(data):Promise<any>{
+    let functionSerialized = this.aws.prepareFunctionToStore(data);
     return new Promise((resolve,reject)=>{
-      this.aws.getLambda().createFunction(functionDefinition, (err:any,rData) =>{
+      this.aws.getLambda().createFunction(functionSerialized, (err:any,rData) =>{
         if(err) reject(err);
         else resolve(rData);
       })
@@ -22,9 +23,8 @@ export class FunctionDeployer{
 export const createFunction:APIGatewayProxyHandler = async (event) => {
   const deployer:FunctionDeployer = new FunctionDeployer(new AWSInstance());
   const data = JSON.parse(event.body);
-  let functionSerialized = this.aws.prepareFunctionToStore(data);
   
-  const prom = deployer.uploadFunction(functionSerialized);
+  const prom = deployer.uploadFunction(data);
 
   let ARN = '';
   await prom.then((result) => {
