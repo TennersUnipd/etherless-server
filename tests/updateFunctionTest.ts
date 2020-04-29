@@ -1,4 +1,4 @@
-import {FunctionDeployer} from  '../src/functions/createFunction'
+import {FunctionDeployer} from  '../src/functions/updateFunction'
 import {describe, it} from 'mocha'
 import mockito from 'ts-mockito'
 import {assert} from 'chai'
@@ -25,32 +25,23 @@ describe('testing FunctionDeployer', () => {
     // STUB FOR AWSInstance Methods
     mockito.when(mockedAWS.getLambda()).thenReturn(new AWS.Lambda({ region: 'us-east-1' })); 
     const data = {name:'testName',zip:zipBuffer};
-    mockito.when(mockedAWS.prepareFunctionToStore(data)).thenReturn(
+    mockito.when(mockedAWS.prepareFunctionToUpdate(data)).thenReturn(
       {
-        Code: {
-          ZipFile: zipBuffer,
-        },
         FunctionName: 'testName',
-        Handler: 'testName.handler',
-        MemorySize: 128,
+        ZipFile: zipBuffer,
         Publish: true,
-        Role: 'roleString',
-        Runtime: 'runTimeString',
-        Timeout: 10,
-        VpcConfig: {
-        },
       }
     )
-    it('testing uploadFunction()',()=>{
-        AWSMock.mock('Lambda','createFunction',(params: GetItemInput, callBack: Function)=>{
+    it('testing updateFunction()',()=>{
+        AWSMock.mock('Lambda','updateFunction',(params: GetItemInput, callBack: Function)=>{
             console.log(params);
             console.log('calledMocked');
             callBack(null,{arnFunction:'test'});
         });
         console.log(data);
-        const toLoad = mockedAWS.prepareFunctionToStore(data);
-        console.log(toLoad);
-        fnDeployer.uploadFunction(toLoad)
+        const toUpdate = mockedAWS.prepareFunctionToDelete(data);
+        console.log(toUpdate);
+        fnDeployer.letUpdateFunction(toUpdate)
           .then((result)=>{console.log(result)})
           .catch((err)=>{assert.fail(err)});
     });
