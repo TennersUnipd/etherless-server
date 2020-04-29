@@ -24,7 +24,7 @@ export const deleteFunction: APIGatewayProxyHandler = async (event) => {
   const deployer: FunctionDeployer = new FunctionDeployer(new AWSInstance());
   const data = JSON.parse(event.body);
   console.log('DATA= ', data);
-  const prom = await deployer.letFunctionDelete(data);
+  await deployer.letFunctionDelete(data);
   return { statusCode: 200, body: 'ok' };
 };
 
