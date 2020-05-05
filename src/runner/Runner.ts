@@ -48,9 +48,10 @@ class Runner {
           console.log(response);
           console.log('Now giving back to etherless-cli');
           const jsonResponse = JSON.stringify(response);
-          const sendFn = this.contract.methods.sendResponse(jsonResponse, identifier);
-          this.transactContractMethod(sendFn).then(() => console.log('Response sent')).catch((er) => console.log('Can\'t send response', er));
-        }).catch(console.error);
+          this.sendBackResponse(jsonResponse, identifier);
+        }).catch((err) => {
+          this.sendBackResponse(JSON.stringify(err), identifier);
+        });
       }
     });
     subscription.on('connected', (connected) => {
@@ -59,6 +60,11 @@ class Runner {
     subscription.on('error', (error) => {
       console.log("ERROR", error);
     });
+  }
+
+  private sendBackResponse(content: string, identifier: string) {
+    const sendFn = this.contract.methods.sendResponse(content, identifier);
+    this.transactContractMethod(sendFn).then(() => console.log('Response sent')).catch((er) => console.log('Can\'t send response', er));
   }
 
   private static executeLambdaFunction(arn, params) {
