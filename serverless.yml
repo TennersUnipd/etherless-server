@@ -2,7 +2,7 @@ service:
   name: etherless-server
 # app and org for use with dashboard.serverless.com
 app: etherless-server
-org: gianmarcopettinato
+org: tennersunipd
 
 custom:
   webpack:

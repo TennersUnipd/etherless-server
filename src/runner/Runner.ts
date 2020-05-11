@@ -1,16 +1,17 @@
 /* eslint-disable no-underscore-dangle */
-var Web3 = require('web3');
 import { Contract } from 'web3-eth-contract';
 import axios, { AxiosResponse } from 'axios';
+
+const Web3 = require('web3');
 
 // Listens for eth events, calls lambda functions, returns output to etherless-cli
 
 // configure AWS Lambda service (uses credentials from ~/.aws/credentials)
 const AWS = require('aws-sdk');
+
 const lambda = new AWS.Lambda({ region: 'us-east-1' });
 
 class Runner {
-
   private web3: any;
 
   private contract?: Contract;
@@ -18,7 +19,7 @@ class Runner {
   public async config() {
     const abi = await Runner.getAbi(process.env.CONTRACT_ADDRESS);
     this.web3 = new Web3(new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws/v3/f065353f3ff14efa80c5be0cf4cc6655'));
-    console.log("CONTRACT", process.env.CONTRACT_ADDRESS);
+    console.log('CONTRACT', process.env.CONTRACT_ADDRESS);
     this.contract = new this.web3.eth.Contract(abi, process.env.CONTRACT_ADDRESS);
     // una volta che ho instanziato il contratto
     this.start();
@@ -36,7 +37,7 @@ class Runner {
 
   private start() {
     console.log('Starting to listen');
-    let subscription = this.contract.events.RemoteExec((error, event) => {
+    const subscription = this.contract.events.RemoteExec((error, event) => {
       console.log('Event received');
       if (error == null) {
         const functionRemoteResource = event.returnValues._name;
@@ -55,10 +56,10 @@ class Runner {
       }
     });
     subscription.on('connected', (connected) => {
-      console.log("connected", connected);
+      console.log('connected', connected);
     });
     subscription.on('error', (error) => {
-      console.log("ERROR", error);
+      console.log('ERROR', error);
     });
   }
 
@@ -75,8 +76,8 @@ class Runner {
     return lambda.invoke(functionDescriptor).promise();
   }
 
-  private static runnerEthAccount() : EthAddress {
-      return { address: process.env.RUNNER_ACC_ADDRESS, privateKey: process.env.RUNNER_ACC_KEY };
+  private static runnerEthAccount(): EthAddress {
+    return { address: process.env.RUNNER_ACC_ADDRESS, privateKey: process.env.RUNNER_ACC_KEY };
   }
 
   private async transactContractMethod(func: any, value: number | undefined = undefined): Promise<any> {
