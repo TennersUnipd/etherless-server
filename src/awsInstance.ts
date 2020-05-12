@@ -9,7 +9,7 @@ export class AWSInstance {
     constructor() {
         this.lambda = new AWS.Lambda({ region: 'us-east-1' });
         this.runtime = 'nodejs10.x';
-        this.ARN_ROLE = 'arn:aws:iam::964189167587:role/etherless-dev';
+        this.ARN_ROLE = 'arn:aws:iam::316315295188:role/etherless-server';
         this.FN_TIMEOUT = 60;
     }
 
