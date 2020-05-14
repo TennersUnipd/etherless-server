@@ -2,12 +2,12 @@
 import { Contract } from 'web3-eth-contract';
 import axios, { AxiosResponse } from 'axios';
 
-const Web3 = require('web3');
+import Web3 from 'web3';
 
 // Listens for eth events, calls lambda functions, returns output to etherless-cli
 
 // configure AWS Lambda service (uses credentials from ~/.aws/credentials)
-const AWS = require('aws-sdk');
+import AWS from 'aws-sdk';
 
 const lambda = new AWS.Lambda({ region: 'us-east-1' });
 
@@ -45,14 +45,15 @@ class Runner {
         const identifier = event.returnValues._identifier;
 
         console.log(`Call to function ${functionRemoteResource} with params ${functionParameters}`);
-        Runner.executeLambdaFunction(functionRemoteResource, functionParameters).then((response) => {
-          console.log(response);
-          console.log('Now giving back to etherless-cli');
-          const jsonResponse = JSON.stringify(response);
-          this.sendBackResponse(jsonResponse, identifier);
-        }).catch((err) => {
-          this.sendBackResponse(JSON.stringify(err), identifier);
-        });
+        Runner.executeLambdaFunction(functionRemoteResource, functionParameters)
+          .then((response) => {
+            console.log(response);
+            console.log('Now giving back to etherless-cli');
+            const jsonResponse = JSON.stringify(response);
+            this.sendBackResponse(jsonResponse, identifier);
+          }).catch((err) => {
+            this.sendBackResponse(JSON.stringify(err), identifier);
+          });
       }
     });
     subscription.on('connected', (connected) => {

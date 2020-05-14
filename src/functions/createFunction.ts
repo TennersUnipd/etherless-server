@@ -4,20 +4,54 @@
  * @methods createFunction
  */
 import { APIGatewayProxyHandler } from 'aws-lambda';
-import AWSInstance from '../awsInstance';
+import config from '../config.json';
 
+import AWS = require('aws-sdk');
 
+/**
+ * @class FunctionDeployer
+ */
 export class FunctionDeployer {
-  private aws: AWSInstance;
+  private aws: AWS.Lambda;
 
-  constructor(aws: AWSInstance) {
+  constructor(aws: AWS.Lambda) {
     this.aws = aws;
   }
 
+  /**
+   * @function
+   * @param parsedData
+   * @returns a data structure fot the deploy of a new function
+   * prepare the data structure for the request
+   */
+  // eslint-disable-next-line class-methods-use-this
+  public prepareFunctionToStore(parsedData: any): any {
+    return {
+      Code: {
+        ZipFile: Buffer.from(parsedData.zip, 'utf8'),
+      },
+      FunctionName: parsedData.name,
+      Handler: `${parsedData.name}.handler`,
+      MemorySize: 128,
+      Publish: true,
+      Role: config.ARN_ROLE,
+      Runtime: config.runtime,
+      Timeout: config.FN_TIMEOUT,
+      VpcConfig: {
+      },
+    };
+  }
+
+  /**
+   * @function updateFunction
+   * @param data
+   * @returns Promise that contains the result of the remote call;
+   * sends the request to the AWS service and encapsulate it in a promise
+   */
   public uploadFunction(data): Promise<any> {
-    const functionSerialized = this.aws.prepareFunctionToStore(data);
+    const functionSerialized = this.prepareFunctionToStore(data);
     return new Promise((resolve, reject) => {
-      this.aws.getLambda().createFunction(functionSerialized, (err: any, rData) => {
+      this.aws.createFunction(functionSerialized, (err: any, rData) => {
         if (err) reject(err);
         else resolve(rData);
       });
@@ -25,8 +59,13 @@ export class FunctionDeployer {
   }
 }
 
+/**
+ * @function createFunction
+ * @param event
+ * Instantiate the FunctionDeployer class and returns the ARN of deploy
+ */
 export const createFunction: APIGatewayProxyHandler = async (event) => {
-  const deployer: FunctionDeployer = new FunctionDeployer(new AWSInstance());
+  const deployer = new FunctionDeployer(new AWS.Lambda({ region: config.region }));
   const data = JSON.parse(event.body);
 
   const prom = deployer.uploadFunction(data);
