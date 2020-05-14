@@ -1,9 +1,15 @@
 /* eslint-disable no-underscore-dangle */
 var Web3 = require('web3');
+var fs = require('fs');
 import { Contract } from 'web3-eth-contract';
-import axios, { AxiosResponse } from 'axios';
 
 // Listens for eth events, calls lambda functions, returns output to etherless-cli
+
+// interface EtherscanResponse {
+//   status: string;
+//   message: string;
+//   result: string;
+// }
 
 // configure AWS Lambda service (uses credentials from ~/.aws/credentials)
 const AWS = require('aws-sdk');
@@ -16,15 +22,16 @@ class Runner {
   private contract?: Contract;
 
   public async config() {
-    const abi = await Runner.getAbi(process.env.CONTRACT_ADDRESS);
-    this.web3 = new Web3(new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws/v3/f065353f3ff14efa80c5be0cf4cc6655'));
+    //const abi = await Runner.getAbi(process.env.CONTRACT_ADDRESS);
+    const abi = fs.readFileSync('./contracts/EtherlessSmart.json');
+    this.web3 = new Web3(new Web3.providers.WebsocketProvider('ws://taverna.pettinato.eu:8545'));
     console.log("CONTRACT", process.env.CONTRACT_ADDRESS);
-    this.contract = new this.web3.eth.Contract(abi, process.env.CONTRACT_ADDRESS);
+    this.contract = new this.web3.eth.Contract(JSON.parse(abi), process.env.CONTRACT_ADDRESS);
     // una volta che ho instanziato il contratto
     this.start();
   }
 
-  private static async getAbi(contractAddress: string): Promise<any> {
+  /*private static async getAbi(contractAddress: string): Promise<any> {
     try {
       console.log('DOWNLOADING contract abi');
       const response: AxiosResponse<EtherscanResponse> = await axios.get(`https://api-ropsten.etherscan.io/api?module=contract&action=getabi&address=${contractAddress}&apikey=${process.env.ETHSCANKEY}`);
@@ -32,7 +39,7 @@ class Runner {
     } catch (error) {
       throw new Error('Unable to update contract ABI');
     }
-  }
+  }*/
 
   private start() {
     console.log('Starting to listen');
@@ -109,12 +116,6 @@ class Runner {
       }).catch(reject);
     });
   }
-}
-
-interface EtherscanResponse {
-  status: string;
-  message: string;
-  result: string;
 }
 
 interface EthAddress {
