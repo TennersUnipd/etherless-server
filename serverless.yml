@@ -2,21 +2,17 @@ service:
   name: etherless-server
 # app and org for use with dashboard.serverless.com
 app: etherless-server
-org: gianmarcopettinato
-
-custom:
-  webpack:
-    webpackConfig: ./webpack.config.js
-    includeModules: true
+org: tennersunipd
 
 # Add the serverless-webpack plugin
 plugins:
   - serverless-webpack
   - serverless-offline
+
 provider:
   name: aws
   runtime: nodejs12.x
-  role: arn:aws:iam::964189167587:role/etherless-dev
+  role: arn:aws:iam::316315295188:role/etherless-server
   apiGateway:
     minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
   environment:

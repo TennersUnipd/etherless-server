@@ -1,0 +1,6 @@
+{
+  "region":"us-east-1",
+  "runtime":"nodejs10.x",
+  "ARN_ROLE": "arn:aws:iam::316315295188:role/etherless-server",
+  "FN_TIMEOUT": 60
+}
